@@ -1,9 +1,9 @@
 package feint
 
 import (
-	"feint/fequick/logger"
 	"encoding/json"
 	"os"
+	"github.com/feintKotlin/fequick/logger"
 )
 
 // 加载配置文件
