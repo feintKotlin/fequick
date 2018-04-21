@@ -7,12 +7,15 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/feintKotlin/fequick/component"
 	"github.com/feintKotlin/fequick/logger"
 )
 
+const   (
+	V = "**value**"
+)
+
 type feintGlobe struct {
-	routeMap map[string]component.FController
+	routeMap map[string] FController
 	router   *httprouter.Router
 	fConfig  feintConfig
 }
@@ -20,7 +23,7 @@ type feintGlobe struct {
 type feintConfig struct {
 	Server   serverConfig `json:"server"`
 	Database databaseConfig
-	Mongo MongoDbConfig `json:"mongo"`
+	Mongo mongoDbConfig `json:"mongo"`
 }
 
 type serverConfig struct {
@@ -36,11 +39,12 @@ type databaseConfig struct {
 	Password string
 }
 
-type MongoDbConfig struct {
+type mongoDbConfig struct {
 	Url string `json:"url"`
 	Enable bool `json:"enable"`
 	DB string `json:"db"`
 }
+
 
 var fg feintGlobe
 

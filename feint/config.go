@@ -15,7 +15,7 @@ func loadConfig() {
 			Host:    "127.0.0.1",
 			AppName: "FeintApp",
 		},
-		Mongo:MongoDbConfig{
+		Mongo:mongoDbConfig{
 			Url:"localhost",
 			Enable:false,
 		},

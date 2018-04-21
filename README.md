@@ -7,9 +7,12 @@ a restful framework for quick dev
 
 ```go
 
-type MyController struct {
-	component.FController
-}
+import (
+	"github.com/feintKotlin/fequick/feint"
+	"gopkg.in/mgo.v2/bson"
+	"errors"
+	"fmt"
+)
 
 type User struct {
 	Name string `json:"name"`
@@ -22,32 +25,46 @@ type Address struct {
 	Town string `json:"town"`
 }
 
-func (controller MyController) Execute(params httprouter.Params, obj interface{}) interface{} {
-	collection:=feint.GetCollection("user")
+type MyController struct {
+	feint.FController
+}
 
-	err:=collection.Insert(obj)
+func (controller MyController) Execute(req feint.FRequest) interface{} {
 
-	if err!=nil{
-		return "Insert To MongoDb Failed"
-	}else{
-		return obj;
+	if data,err:=req.Data();err==nil{
+		collection:=feint.GetCollection("user")
+		err=collection.Insert(data)
+		if err!=nil{
+			return errors.New(fmt.Sprintf("MongoDB Insert: %s",err.Error()))
+		}
+
+		return "success"
+	}else {
+		return err
 	}
 }
 
 type GetUserController struct {
-	component.FController
+	feint.FController
 }
 
-func (controller GetUserController) Execute(params httprouter.Params, obj interface{}) interface{} {
-	name:=params.ByName("name")
+func (controller GetUserController) Execute(req feint.FRequest) interface{} {
 
-	collection:=feint.GetCollection("user")
+	if _,err:=req.Data();err==nil{
+		name:=req.Get("name")
 
-	user:=User{}
+		collection:=feint.GetCollection("user")
 
-	collection.Find(bson.M{"name":name}).One(&user)
+		user:=User{}
 
-	return user
+		collection.Find(bson.M{"name":name}).One(&user)
+
+		return user
+
+	}else{
+		return err
+	}
+
 }
 func init() {
 	feint.Route("POST@/user", MyController{})
@@ -57,6 +74,7 @@ func init() {
 func main() {
 	feint.Run()
 }
+
 
 ```
 app.json
