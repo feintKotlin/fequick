@@ -15,7 +15,7 @@ const   (
 )
 
 type feintGlobe struct {
-	routeMap map[string] FController
+	routeMap map[string] func(request FRequest)interface{}
 	router   *httprouter.Router
 	fConfig  feintConfig
 }

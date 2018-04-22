@@ -13,9 +13,9 @@ import (
 	"errors"
 )
 
-func Route(path string, handle FController) {
+func Route(path string, handle func(request FRequest)interface{}) {
 	if fg.routeMap == nil {
-		fg.routeMap = make(map[string] FController)
+		fg.routeMap = make(map[string] func(request FRequest)interface{})
 	}
 
 	fg.routeMap[path] = handle
@@ -33,7 +33,7 @@ func loadRouter() {
 			logger.LogE("Invalid path", key)
 		}
 
-		httpFunc := func(value FController, path string) (func(w http.ResponseWriter, r *http.Request, params httprouter.Params)){
+		httpFunc := func(value func(request FRequest)interface{}, path string) (func(w http.ResponseWriter, r *http.Request, params httprouter.Params)){
 
 			return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
@@ -52,10 +52,11 @@ func loadRouter() {
 				}
 
 
-				inf := value.Execute(FRequest{params, data})
+				inf := value(FRequest{params, data})
 
 				infJson, err := json.Marshal(inf)
 				if err == nil {
+					w.Header().Set("Access-Control-Allow-Origin", "*")
 					fmt.Fprint(w, string(infJson))
 				} else {
 					logger.LogW(err)
